@@ -93,12 +93,17 @@ SELECT
 		ELSE NULL
 	END AS ramp,
 
-	CASE tollrd
-		WHEN 'B' THEN true
-		WHEN 'FT' THEN true
-		WHEN 'TF' THEN true
-		ELSE false
-	END AS tollway,
+--	CASE tollrd
+	--	WHEN 'B' THEN true
+	--	WHEN 'FT' THEN true
+	--	WHEN 'TF' THEN true
+	--	ELSE false
+--	END AS tollway,
+        case
+        when tollrd = 0 then true
+        when tollrd is null then true
+        else false
+        end as tollway,
 
 	ST_Transform(ST_Force_3DZ(ST_LineMerge(nw.geom)), 2154) AS geom
 	-- FIXME remove ST_LineMerge call as soon as loader will use Simple geometry option
