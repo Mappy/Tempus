@@ -15,6 +15,9 @@ target_link_libraries( sample_road_plugin tempus )
 add_library( sample_pt_plugin MODULE sample_pt_plugin/sample_pt_plugin.cc )
 target_link_libraries( sample_pt_plugin tempus )
 
+add_library( mappy_plugin MODULE mappy_plugin/mappy_plugin.cc )
+target_link_libraries( mappy_plugin tempus )
+
 include_directories(.)
 
 add_library( dynamic_multi_plugin MODULE dynamic_multi_plugin/dynamic_multi_plugin.cc )
