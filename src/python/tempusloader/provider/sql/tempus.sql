@@ -57,7 +57,7 @@ INSERT INTO tempus.transport_mode(name, public_transport, gtfs_route_type, traff
 	VALUES ('Private car',     'f', NULL, 4,  5, 1,    1,    't', 'f', 'f');
 INSERT INTO tempus.transport_mode(name, public_transport, gtfs_route_type, traffic_rules, speed_rule, toll_rule, engine_type, need_parking, shared_vehicle, return_shared_vehicle)
         VALUES ('Taxi',            'f', NULL, 8, 5, 1,    1,    'f', 'f', 'f');
-
+/*
 CREATE TABLE tempus.road_validity_period
 (
     id integer PRIMARY KEY,
@@ -78,6 +78,7 @@ CREATE TABLE tempus.road_validity_period
 );
 COMMENT ON TABLE tempus.road_validity_period IS 'Periods during which road restrictions and speed profiles apply';
 INSERT INTO tempus.road_validity_period VALUES (0, 'Always', true, true, true, true, true, true, true, true, true, true, true, NULL, NULL);
+*/
 
 /*
 CREATE TABLE tempus.seasonal_ticket
@@ -198,6 +199,8 @@ COMMENT ON COLUMN tempus.road_daily_profile.end_time IS 'When the period ends. N
 COMMENT ON COLUMN tempus.road_daily_profile.speed_rule IS 'Speed rule: car, truck, bike, etc.';
 COMMENT ON COLUMN tempus.road_daily_profile.average_speed IS 'Speed value in km/h';
 
+
+/*
 CREATE TABLE tempus.road_section_speed
 (
     road_section_id bigint NOT NULL REFERENCES tempus.road_section ON DELETE CASCADE ON UPDATE CASCADE,
@@ -208,12 +211,13 @@ CREATE TABLE tempus.road_section_speed
 COMMENT ON TABLE tempus.road_section_speed IS 'Speed, vehicle types and validity period associated to road sections';
 COMMENT ON COLUMN tempus.road_section_speed.period_id IS '0 if always applies';
 COMMENT ON COLUMN tempus.road_section_speed.profile_id IS 'Reference to tempus.road_daily_profile';
-
+*/
 
 CREATE TABLE tempus.road_section_daily_profile
 (
     id serial PRIMARY KEY,
     section_id bigint NOT NULL REFERENCES tempus.road_section ON DELETE CASCADE ON UPDATE CASCADE,
+    name varchar,
     speed_freeflow integer,
     speed_weekend integer,
     speed_weekday integer,
@@ -224,7 +228,13 @@ CREATE TABLE tempus.road_section_daily_profile
     thursday integer,
     friday integer,
     saturday integer,
-    sunday integer
+    sunday integer,
+    bank_holiday boolean DEFAULT true,
+    day_before_bank_holiday boolean DEFAULT true,
+    holidays boolean DEFAULT true,
+    day_before_holidays boolean DEFAULT true,
+    start_date date,
+    end_date date
 );
 COMMENT ON TABLE tempus.road_section_daily_profile IS 'For each section id this table contains by week day speed profile id applies';
 
@@ -241,10 +251,10 @@ COMMENT ON COLUMN tempus.road_restriction.sections IS 'Involved road sections ID
 CREATE TABLE tempus.road_restriction_time_penalty
 (
     restriction_id bigint NOT NULL REFERENCES tempus.road_restriction ON DELETE CASCADE ON UPDATE CASCADE,
-    period_id integer REFERENCES tempus.road_validity_period ON DELETE CASCADE ON UPDATE CASCADE, -- 0 if always applies
+	period_id integer, -- REFERENCES tempus.road_daily_profile ON DELETE CASCADE ON UPDATE CASCADE, -- 0 if always applies 
     traffic_rules integer NOT NULL, -- References tempus.road_traffic_rule => bitfield value
     time_value double precision NOT NULL,
-    PRIMARY KEY (restriction_id, period_id, traffic_rules)
+    PRIMARY KEY (restriction_id, traffic_rules)
 );
 COMMENT ON TABLE tempus.road_restriction_time_penalty IS 'Time penalty (including infinite values for forbidden movements) applied to road restrictions';
 COMMENT ON COLUMN tempus.road_restriction_time_penalty.period_id IS 'NULL if always applies';
@@ -255,10 +265,10 @@ COMMENT ON COLUMN tempus.road_restriction_time_penalty.time_value IS 'In minutes
 CREATE TABLE tempus.road_restriction_toll
 (
     restriction_id bigint NOT NULL REFERENCES tempus.road_restriction ON DELETE CASCADE ON UPDATE CASCADE,
-    period_id integer NOT NULL REFERENCES tempus.road_validity_period ON DELETE CASCADE ON UPDATE CASCADE, -- NULL if always applies
+    period_id integer, -- REFERENCES tempus.road_daily_profile ON DELETE CASCADE ON UPDATE CASCADE, -- NULL if always applies
     toll_rules integer NOT NULL, -- References tempus.road_toll_rule => bitfield value
     toll_value double precision,
-    PRIMARY KEY (restriction_id, period_id, toll_rules)
+    PRIMARY KEY (restriction_id, toll_rules)
 );
 COMMENT ON TABLE tempus.road_restriction_toll IS 'Tolls applied to road restrictions';
 COMMENT ON COLUMN tempus.road_restriction_toll.period_id IS 'NULL if always applies';

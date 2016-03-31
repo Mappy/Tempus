@@ -21,7 +21,6 @@ ALTER TABLE tempus.road_section DROP CONSTRAINT road_section_node_from_fkey;
 ALTER TABLE tempus.road_section DROP CONSTRAINT road_section_node_to_fkey;
 ALTER TABLE tempus.poi DROP CONSTRAINT poi_road_section_id_fkey;
 ALTER TABLE tempus.pt_stop DROP CONSTRAINT pt_stop_road_section_id_fkey;
-ALTER TABLE tempus.road_section_speed DROP CONSTRAINT road_section_speed_road_section_id_fkey;
 ALTER TABLE tempus.road_section DROP CONSTRAINT road_section_pkey;
 
 -- create index to speed up next query
